@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Klocek pod Klockiem</title>
+	<!-- KPK GAME - Copyright (c) 2026 Sebastian Polska. Wszelkie prawa zastrzeżone. Zabrania się kopiowania i modyfikowania kodu. -->
+	<meta name="copyright-hash" content="b8e7a4c2d9f1e3b6a5c8d2f4e7a9b1c3">
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<div class="container">
+		<h1>Klocek pod Klockiem</h1>
+		<div class="game-container">
+			<div class="info-panel">
+				<div class="score">
+					<h3>Wynik</h3>
+					<p id="score">0</p>
+				</div>
+				<div class="level">
+					<h3>Poziom</h3>
+					<p id="level">1</p>
+				</div>
+				<div class="next-piece">
+					<h3>Następny</h3>
+					<canvas id="next" width="100" height="100"></canvas>
+				</div>
+				<div class="controls">
+					<h3>Sterowanie</h3>
+					<p>A/D - Ruch</p>
+					<p>R - Obrót</p>
+					<p>S - Szybciej</p>
+					<p>Spacja - Upuść/Start</p>
+					<p>P - Pauza</p>
+				</div>
+			</div>
+			<div class="game-board">
+				<canvas id="KPK" width="312" height="520"></canvas>
+			</div>
+		</div>
+		<div class="button-container">
+			<button id="start-btn">Start</button>
+			<button id="reset-btn">Reset</button>
+		</div>
+		<p class="copyright">© 2026 Sebastian Polska. Wszelkie prawa zastrzeżone.</p>
+		<!-- KPK GAME - Copyright (c) 2026 Sebastian Polska. Wszelkie prawa zastrzeżone. Zabrania się kopiowania i modyfikowania kodu. -->
+	</div>
+	<script src="script.js"></script>
+</body>
+</html>

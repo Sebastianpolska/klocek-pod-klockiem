@@ -1,0 +1,96 @@
+/* KPK GAME - Copyright (c) 2026 Sebastian Polska. Wszelkie prawa zastrzeżone. Zabrania się kopiowania i modyfikowania kodu. */
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+body {
+	font-family: 'Arial', sans-serif;
+	background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+	min-height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: white;
+}
+.container {
+	text-align: center;
+}
+h1 {
+	font-size: 3rem;
+	margin-bottom: 20px;
+	text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+.game-container {
+	display: flex;
+	gap: 20px;
+	justify-content: center;
+	align-items: flex-start;
+	margin-bottom: 40px;
+	position: relative;
+	padding-left: 230px;
+}
+.info-panel {
+	background: rgba(255, 255, 255, 0.1);
+	backdrop-filter: blur(10px);
+	padding: 20px;
+	border-radius: 10px;
+	min-width: 200px;
+	position: absolute;
+	left: 0;
+}
+.score, .level, .next-piece, .controls {
+	margin-bottom: 20px;
+}
+.score h3, .level h3, .next-piece h3, .controls h3 {
+	font-size: 1.2rem;
+	margin-bottom: 10px;
+}
+.score p, .level p {
+	font-size: 2rem;
+	font-weight: bold;
+}
+#next {
+	background: rgba(0, 0, 0, 0.3);
+	border-radius: 5px;
+}
+.controls p {
+	font-size: 0.9rem;
+	margin: 5px 0;
+	text-align: left;
+}
+#KPK {
+	background: rgba(0, 0, 0, 0.5);
+	border: 3px solid rgba(255, 255, 255, 0.3);
+	border-radius: 5px;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+.button-container {
+	display: flex;
+	gap: 15px;
+	justify-content: center;
+	margin-top: 30px;
+}
+#start-btn, #reset-btn {
+	padding: 15px 40px;
+	font-size: 1.2rem;
+	background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+	border: none;
+	border-radius: 25px;
+	color: white;
+	cursor: pointer;
+	transition: transform 0.2s, box-shadow 0.2s;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+#start-btn:hover, #reset-btn:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+#start-btn:active, #reset-btn:active {
+	transform: translateY(0);
+}
+.copyright {
+	font-size: 0.8rem;
+	margin-top: 20px;
+	opacity: 0.7;
+}
