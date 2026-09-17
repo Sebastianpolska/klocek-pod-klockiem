@@ -33,12 +33,13 @@ const context = canvas.getContext('2d');
 const nextCanvas = document.getElementById('next');
 const nextContext = nextCanvas.getContext('2d');
 const scoreElement = document.getElementById('score');
+const highScoreElement = document.getElementById('high-score');
 const levelElement = document.getElementById('level');
 const startBtn = document.getElementById('start-btn');
 const resetBtn = document.getElementById('reset-btn');
 
 context.scale(26, 26);
-nextContext.scale(20, 20);
+nextContext.scale(16, 16);
 
 const colors = [
 	null,
@@ -132,7 +133,6 @@ function collide(a, p) {
 			if (m[y][x] !== 0 && (a[y + o.y] && a[y + o.y][x + o.x]) !== 0) return true;
 	return false;
 }
-// aaaaaaaaa zara zdechne z tego głupiego kodu
 function arenaSweep() {
 	let rc = 0;
 	outer: for (let y = arena.length - 1; y > 0; --y) {
@@ -145,12 +145,17 @@ function arenaSweep() {
 	}
 	if (rc > 0) {
 		player.score += rc * 10 * rc;
-		player.level = Math.min(MAX_LEVEL, Math.floor(player.score / 100) + 1);
+		player.level = Math.floor(player.score / 100) + 1;
 		scoreElement.innerText = player.score;
 		levelElement.innerText = player.level;
+		if (player.score > highScore) {
+			highScore = player.score;
+			highScoreElement.innerText = highScore;
+			localStorage.setItem('kpkHighScore', highScore);
+		}
 		dropInterval = Math.max(100, 1000 - (player.level - 1) * 100);
 	}
-}// superowa funkcja ktura sie psuje co 0.000000000000000001 sekundy
+}
 
 function playerReset() {
 	if (nextPiece === null) nextPiece = createPiece(pieces[pieces.length * Math.random() | 0]);
@@ -215,6 +220,8 @@ function playerHardDrop() {
 let dropCounter = 0, dropInterval = 1000, lastTime = 0, isPaused = true, gameOver = false, nextPiece = null;
 const arena = Array(20).fill().map(() => Array(12).fill(0));
 const player = {pos: {x: 0, y: 0}, matrix: null, score: 0, level: 1};
+let highScore = localStorage.getItem('kpkHighScore') || 0;
+highScoreElement.innerText = highScore;
 
 function update(t = 0) {
 	if (isPaused) {
@@ -273,6 +280,7 @@ function resetGame() {
 	player.level = 1;
 	scoreElement.innerText = player.score;
 	levelElement.innerText = player.level;
+	highScoreElement.innerText = highScore;
 	dropInterval = 1000;
 	gameOver = false;
 	isPaused = true;

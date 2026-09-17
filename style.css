@@ -28,31 +28,35 @@ h1 {
 	align-items: flex-start;
 	margin-bottom: 40px;
 	position: relative;
-	padding-left: 230px;
+	padding-left: 200px;
 }
 .info-panel {
 	background: rgba(255, 255, 255, 0.1);
 	backdrop-filter: blur(10px);
-	padding: 20px;
+	padding: 15px;
 	border-radius: 10px;
-	min-width: 200px;
+	min-width: 180px;
 	position: absolute;
 	left: 0;
+	height: 520px;
+	overflow-y: auto;
 }
-.score, .level, .next-piece, .controls {
-	margin-bottom: 20px;
+.score, .high-score, .level, .next-piece, .controls {
+	margin-bottom: 15px;
 }
-.score h3, .level h3, .next-piece h3, .controls h3 {
-	font-size: 1.2rem;
-	margin-bottom: 10px;
+.score h3, .high-score h3, .level h3, .next-piece h3, .controls h3 {
+	font-size: 0.9rem;
+	margin-bottom: 8px;
 }
-.score p, .level p {
-	font-size: 2rem;
+.score p, .high-score p, .level p {
+	font-size: 1.5rem;
 	font-weight: bold;
 }
 #next {
 	background: rgba(0, 0, 0, 0.3);
 	border-radius: 5px;
+	width: 80px;
+	height: 80px;
 }
 .controls p {
 	font-size: 0.9rem;
