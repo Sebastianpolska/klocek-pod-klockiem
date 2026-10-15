@@ -1,0 +1,19 @@
+{
+  "name": "klocek-pod-klockiem",
+  "version": "1.0.0",
+  "description": "Gra Tetris/Klocek pod Klockiem - Copyright (c) 2026 Sebastian Polska",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:css": "tailwindcss -i ./style.css -o ./dist/output.css --watch"
+  },
+  "keywords": ["tetris", "game", "klocek-pod-klockiem"],
+  "author": "Sebastian Polska",
+  "license": "UNLICENSED",
+  "type": "commonjs",
+  "devDependencies": {
+    "autoprefixer": "^10.6.1",
+    "postcss": "^8.5.28",
+    "tailwindcss": "^4.3.3"
+  }
+}

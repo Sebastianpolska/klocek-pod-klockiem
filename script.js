@@ -1,6 +1,116 @@
 // KPK GAME - Copyright (c) 2026 Sebastian Polska. Wszelkie prawa zastrzeżone. Zabrania się kopiowania i modyfikowania kodu.
 const COPYRIGHT_HASH = "b8e7a4c2d9f1e3b6a5c8d2f4e7a9b1c3";
 const canvas = document.getElementById('KPK');
+if (!canvas) {
+	console.error('Canvas element not found');
+}
+
+// Settings
+let expertMode = false;
+let speedMultiplier = 1;
+let windowSize = 0;
+let keyBindings = {
+	left: 'a',
+	right: 'd',
+	rotate: 'r',
+	drop: 's',
+	harddrop: ' ',
+	pause: 'p'
+};
+
+// Load settings from localStorage
+const savedSettings = localStorage.getItem('kpkSettings');
+if (savedSettings) {
+	const settings = JSON.parse(savedSettings);
+	expertMode = settings.expertMode || false;
+	speedMultiplier = settings.speedMultiplier || 1;
+	windowSize = settings.windowSize || 0;
+	keyBindings = settings.keyBindings || keyBindings;
+}
+
+// Update key inputs
+document.getElementById('key-left').value = keyBindings.left.toUpperCase();
+document.getElementById('key-right').value = keyBindings.right.toUpperCase();
+document.getElementById('key-rotate').value = keyBindings.rotate.toUpperCase();
+document.getElementById('key-drop').value = keyBindings.drop.toUpperCase();
+document.getElementById('key-harddrop').value = keyBindings.harddrop === ' ' ? 'SPACJA' : keyBindings.harddrop.toUpperCase();
+document.getElementById('key-pause').value = keyBindings.pause.toUpperCase();
+document.getElementById('expert-mode').checked = expertMode;
+document.getElementById('speed-setting').value = speedMultiplier;
+document.getElementById('speed-setting').disabled = expertMode;
+document.getElementById('window-size').value = windowSize;
+
+// Update controls display
+function updateControlsDisplay() {
+	const controlsLeft = document.getElementById('controls-left');
+	const controlsRight = document.getElementById('controls-right');
+	const controlsRotate = document.getElementById('controls-rotate');
+	const controlsDrop = document.getElementById('controls-drop');
+	const controlsHarddrop = document.getElementById('controls-harddrop');
+	const controlsPause = document.getElementById('controls-pause');
+	
+	if (controlsLeft) controlsLeft.textContent = `${keyBindings.left.toUpperCase()} - Ruch w lewo`;
+	if (controlsRight) controlsRight.textContent = `${keyBindings.right.toUpperCase()} - Ruch w prawo`;
+	if (controlsRotate) controlsRotate.textContent = `${keyBindings.rotate.toUpperCase()} - Obrót`;
+	if (controlsDrop) controlsDrop.textContent = `${keyBindings.drop.toUpperCase()} - Szybciej`;
+	if (controlsHarddrop) controlsHarddrop.textContent = `${keyBindings.harddrop === ' ' ? 'SPACJA' : keyBindings.harddrop.toUpperCase()} - Upuść/Start`;
+	if (controlsPause) controlsPause.textContent = `${keyBindings.pause.toUpperCase()} - Pauza`;
+}
+
+// Update expert notification
+function updateExpertNotification() {
+	const notification = document.getElementById('expert-notification');
+	if (notification) {
+		if (expertMode) {
+			notification.classList.remove('hidden');
+		} else {
+			notification.classList.add('hidden');
+		}
+	}
+}
+
+// Update window size
+function updateWindowSize() {
+	const sizeMap = {
+		0: 12,
+		2: 14,
+		4: 16,
+		6: 18
+	};
+	const newWidth = sizeMap[windowSize] || 12;
+	
+	// Update arena size
+	const newArena = [];
+	for (let i = 0; i < 20; i++) {
+		newArena.push(new Array(newWidth).fill(0));
+	}
+	Object.assign(arena, newArena);
+	
+	// Update canvas size
+	const scale = 26;
+	const newCanvasWidth = newWidth * scale;
+	canvas.width = newCanvasWidth;
+	
+	// Update draw grid
+	drawGrid = function() {
+		context.strokeStyle = 'rgba(255,255,255,0.1)';
+		context.lineWidth = 0.017;
+		for (let x = 0; x <= newWidth; x++) {
+			context.beginPath();
+			context.moveTo(x, 0);
+			context.lineTo(x, 20);
+			context.stroke();
+		}
+		for (let y = 0; y <= 20; y++) {
+			context.beginPath();
+			context.moveTo(0, y);
+			context.lineTo(newWidth, y);
+			context.stroke();
+		}
+	};
+	
+	draw();
+}
 
 function checkCopyright() {
 	const expectedCopyright = "KPK GAME - Copyright (c) 2026 Sebastian Polska. Wszelkie prawa zastrzeżone. Zabrania się kopiowania i modyfikowania kodu.";
@@ -103,8 +213,7 @@ function draw() {
 }
 
 function drawNext() {
-	nextContext.fillStyle = '#000';
-	nextContext.fillRect(0, 0, nextCanvas.width, nextCanvas.height);
+	nextContext.clearRect(0, 0, nextCanvas.width, nextCanvas.height);
 	const offset = {
 		x: (5 - nextPiece[0].length) / 2,
 		y: (5 - nextPiece.length) / 2,
@@ -144,8 +253,16 @@ function arenaSweep() {
 		rc++;
 	}
 	if (rc > 0) {
-		player.score += rc * 10 * rc;
-		player.level = Math.floor(player.score / 100) + 1;
+		let scoreMultiplier = 1;
+		if (speedMultiplier > 2.5) {
+			scoreMultiplier = 1.5;
+		}
+		player.score += Math.floor(rc * 10 * rc * scoreMultiplier);
+		if (expertMode) {
+			player.level = Math.floor(player.score / 100) + 1;
+		} else {
+			player.level = Math.min(8, Math.floor(player.score / 100) + 1);
+		}
 		scoreElement.innerText = player.score;
 		levelElement.innerText = player.level;
 		if (player.score > highScore) {
@@ -153,7 +270,7 @@ function arenaSweep() {
 			highScoreElement.innerText = highScore;
 			localStorage.setItem('kpkHighScore', highScore);
 		}
-		dropInterval = Math.max(100, 1000 - (player.level - 1) * 100);
+		dropInterval = Math.max(100, (1000 - (player.level - 1) * 100) / speedMultiplier);
 	}
 }
 
@@ -237,7 +354,11 @@ function update(t = 0) {
 }
 
 document.addEventListener('keydown', e => {
-	if (e.keyCode === 32) {
+	const key = e.key.toLowerCase();
+	const settingsMenuEl = document.getElementById('settings-menu');
+	if (settingsMenuEl && !settingsMenuEl.classList.contains('hidden')) return; // Don't process game controls when settings are open
+	
+	if (key === keyBindings.harddrop) {
 		if (gameOver) {
 			e.preventDefault();
 			resetGame();
@@ -254,18 +375,22 @@ document.addEventListener('keydown', e => {
 		}
 	}
 	if (isPaused) return;
-	if (e.key === 'a' || e.key === 'A') playerMove(-1);
-	else if (e.key === 'd' || e.key === 'D') playerMove(1);
-	else if (e.key === 's' || e.key === 'S') playerDrop();
-	else if (e.key === 'r' || e.key === 'R') playerRotate(1);
-	else if (e.keyCode === 32) {
+	if (key === keyBindings.left) playerMove(-1);
+	else if (key === keyBindings.right) playerMove(1);
+	else if (key === keyBindings.drop) playerDrop();
+	else if (key === keyBindings.rotate) playerRotate(1);
+	else if (key === keyBindings.harddrop) {
 		e.preventDefault();
 		playerHardDrop();
 	}
 });
 
 document.addEventListener('keydown', e => {
-	if (e.keyCode === 80 && !gameOver) {
+	const key = e.key.toLowerCase();
+	const settingsMenuEl = document.getElementById('settings-menu');
+	if (settingsMenuEl && !settingsMenuEl.classList.contains('hidden')) return; // Don't process game controls when settings are open
+	
+	if (key === keyBindings.pause && !gameOver) {
 		isPaused = !isPaused;
 		if (!isPaused) {
 			lastTime = performance.now();
@@ -305,4 +430,101 @@ startBtn.addEventListener('click', () => {
 });
 
 resetBtn.addEventListener('click', resetGame);
+
+// Settings menu - initialize after DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+	const settingsBtn = document.getElementById('settings-btn');
+	const settingsMenu = document.getElementById('settings-menu');
+	const closeSettings = document.getElementById('close-settings');
+	const expertModeToggle = document.getElementById('expert-mode');
+
+	if (settingsBtn && settingsMenu && closeSettings && expertModeToggle) {
+		settingsBtn.addEventListener('click', () => {
+			settingsMenu.classList.remove('hidden');
+		});
+
+		closeSettings.addEventListener('click', () => {
+			settingsMenu.classList.add('hidden');
+			// Save settings
+			const settings = {
+				expertMode: expertModeToggle.checked,
+				speedMultiplier: speedMultiplier,
+				windowSize: windowSize,
+				keyBindings: keyBindings
+			};
+			localStorage.setItem('kpkSettings', JSON.stringify(settings));
+		});
+
+		expertModeToggle.addEventListener('change', (e) => {
+			expertMode = e.target.checked;
+			updateExpertNotification();
+			
+			// Disable speed setting when expert mode is on
+			const speedSetting = document.getElementById('speed-setting');
+			const speedLockOverlay = document.getElementById('speed-lock-overlay');
+			if (speedSetting && speedLockOverlay) {
+				speedSetting.disabled = expertMode;
+				if (expertMode) {
+					speedSetting.value = 1;
+					speedMultiplier = 1;
+					speedLockOverlay.classList.remove('hidden');
+				} else {
+					speedLockOverlay.classList.add('hidden');
+				}
+			}
+		});
+
+		// Speed setting
+		const speedSetting = document.getElementById('speed-setting');
+		if (speedSetting) {
+			speedSetting.disabled = expertMode;
+			speedSetting.addEventListener('change', (e) => {
+				let value = parseFloat(e.target.value);
+				if (value < 1) value = 1;
+				if (value > 3) value = 3;
+				speedMultiplier = value;
+			});
+		}
+
+		// Window size setting
+		const windowSizeSelect = document.getElementById('window-size');
+		if (windowSizeSelect) {
+			windowSizeSelect.addEventListener('change', (e) => {
+				windowSize = parseInt(e.target.value);
+				updateWindowSize();
+			});
+		}
+
+			// Key binding
+		const keyInputs = ['left', 'right', 'rotate', 'drop', 'harddrop', 'pause'];
+		keyInputs.forEach(action => {
+			const input = document.getElementById(`key-${action}`);
+			if (input) {
+				input.addEventListener('keydown', (e) => {
+					e.preventDefault();
+					const key = e.key.toLowerCase();
+					keyBindings[action] = key;
+					input.value = key === ' ' ? 'SPACJA' : key.toUpperCase();
+					updateControlsDisplay();
+				});
+				input.addEventListener('click', () => {
+					input.value = '';
+					input.focus();
+				});
+			}
+		});
+	}
+	
+	// Update controls display after DOM is ready
+	updateControlsDisplay();
+	
+	// Initialize expert notification
+	updateExpertNotification();
+	
+	// Initialize window size only if not default
+	if (windowSize !== 0) {
+		updateWindowSize();
+	}
+});
+
 draw();

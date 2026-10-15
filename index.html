@@ -6,49 +6,162 @@
 	<title>Klocek pod Klockiem</title>
 	<!-- KPK GAME - Copyright (c) 2026 Sebastian Polska. Wszelkie prawa zastrzeżone. Zabrania się kopiowania i modyfikowania kodu. -->
 	<meta name="copyright-hash" content="b8e7a4c2d9f1e3b6a5c8d2f4e7a9b1c3">
+	<script src="https://cdn.tailwindcss.com"></script>
 	<link rel="stylesheet" href="style.css">
 </head>
-<body>
-	<div class="container">
-		<h1>Klocek pod Klockiem</h1>
-		<div class="game-container">
-			<div class="info-panel">
-				<div class="score">
-					<h3>Wynik</h3>
-					<p id="score">0</p>
+<body class="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950">
+	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+		<!-- Header -->
+		<div class="text-center mb-8">
+			<h1 class="text-4xl font-bold text-white mb-2">Klocek pod Klockiem</h1>
+			<p class="text-gray-400">Gra Tetris - Copyright (c) 2026 Sebastian Polska</p>
+		</div>
+
+		<!-- Game Container -->
+		<div class="flex flex-col lg:flex-row gap-6 items-start justify-center">
+			<!-- Info Panel -->
+			<div class="bg-gray-900/50 rounded-xl p-6 border border-gray-800 w-full lg:w-64 relative">
+				<div class="space-y-4">
+					<div class="flex gap-4">
+						<div class="flex-1">
+							<h3 class="text-sm font-medium text-gray-300 mb-1">Wynik</h3>
+							<p id="score" class="text-2xl font-bold text-white">0</p>
+						</div>
+						<div class="flex-1">
+							<h3 class="text-sm font-medium text-gray-300 mb-1">Najlepszy wynik</h3>
+							<p id="high-score" class="text-2xl font-bold text-white">0</p>
+						</div>
+					</div>
+					<div class="flex gap-4">
+						<div class="flex-1">
+							<h3 class="text-sm font-medium text-gray-300 mb-1">Poziom</h3>
+							<p id="level" class="text-2xl font-bold text-white">1</p>
+						</div>
+						<div class="flex-1">
+							<h3 class="text-sm font-medium text-gray-300 mb-2">Następny</h3>
+							<div class="bg-gray-800 rounded-lg flex items-center justify-center" style="width: 80px; height: 80px;">
+								<canvas id="next" width="80" height="80"></canvas>
+							</div>
+						</div>
+					</div>
+					<div class="bg-blue-900/20 rounded-xl p-4 border border-blue-800/50">
+						<h3 class="text-sm font-medium text-blue-400 mb-2">Sterowanie</h3>
+						<div class="text-xs text-gray-300 space-y-1">
+							<p id="controls-left">A - Ruch w lewo</p>
+							<p id="controls-right">D - Ruch w prawo</p>
+							<p id="controls-rotate">R - Obrót</p>
+							<p id="controls-drop">S - Szybciej</p>
+							<p id="controls-harddrop">Spacja - Upuść/Start</p>
+							<p id="controls-pause">P - Pauza</p>
+						</div>
+					</div>
+					<div class="flex gap-3 pt-2">
+						<button id="start-btn" class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors">
+							Start
+						</button>
+						<button id="settings-btn" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-medium transition-colors">
+							⚙️
+						</button>
+						<button id="reset-btn" class="flex-1 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-sm font-medium transition-colors">
+							Reset
+						</button>
+					</div>
 				</div>
-				<div class="high-score">
-					<h3>Najlepszy wynik</h3>
-					<p id="high-score">0</p>
-				</div>
-				<div class="level">
-					<h3>Poziom</h3>
-					<p id="level">1</p>
-				</div>
-				<div class="next-piece">
-					<h3>Następny</h3>
-					<canvas id="next" width="80" height="80"></canvas>
-				</div>
-				<div class="controls">
-					<h3>Sterowanie</h3>
-					<p>A/D - Ruch</p>
-					<p>R - Obrót</p>
-					<p>S - Szybciej</p>
-					<p>Spacja - Upuść/Start</p>
-					<p>P - Pauza</p>
+
+				<!-- Settings Menu -->
+				<div id="settings-menu" class="absolute -left-32 top-0 w-96 bg-gray-900/95 rounded-xl p-6 border border-gray-800 hidden overflow-y-auto max-h-full">
+					<div class="flex justify-between items-center mb-4">
+						<h3 class="text-lg font-semibold text-white">Ustawienia</h3>
+						<button id="close-settings" class="text-gray-400 hover:text-white text-xl font-bold">
+							✕
+						</button>
+					</div>
+					<div class="space-y-4">
+						<div class="bg-blue-900/20 rounded-xl p-4 border border-blue-800/50">
+							<div class="flex items-center justify-between">
+								<div>
+									<h4 class="text-sm font-medium text-blue-400">Expert Mode</h4>
+									<p class="text-xs text-gray-300">Brak limitu poziomu</p>
+								</div>
+								<label class="relative inline-flex items-center cursor-pointer">
+									<input type="checkbox" id="expert-mode" class="sr-only peer">
+									<div class="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-green-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+								</label>
+							</div>
+						</div>
+						<div class="bg-blue-900/20 rounded-xl p-4 border border-blue-800/50 relative">
+							<div id="speed-lock-overlay" class="absolute inset-0 bg-red-900/80 rounded-xl flex items-center justify-center hidden">
+								<div class="text-center">
+									<span class="text-2xl mb-2">🔒</span>
+									<p class="text-red-400 text-sm font-medium">Zablokowane w Expert Mode</p>
+								</div>
+							</div>
+							<div>
+								<h4 class="text-sm font-medium text-blue-400 mb-2">Speed</h4>
+								<p class="text-xs text-gray-300 mb-2">1-3 (1.5 = 50% szybciej)</p>
+								<input type="number" id="speed-setting" min="1" max="3" step="0.1" value="1" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+							</div>
+						</div>
+						<div class="bg-blue-900/20 rounded-xl p-4 border border-blue-800/50">
+							<div>
+								<h4 class="text-sm font-medium text-blue-400 mb-2">Rozmiar okna</h4>
+								<p class="text-xs text-gray-300 mb-2">Liczba klocków (2, 4, 6)</p>
+								<select id="window-size" class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+									<option value="0">Default</option>
+									<option value="2">2 klocki większy</option>
+									<option value="4">4 klocki większy</option>
+									<option value="6">6 klocków większy</option>
+								</select>
+							</div>
+						</div>
+						<div class="bg-blue-900/20 rounded-xl p-4 border border-blue-800/50">
+							<h4 class="text-sm font-medium text-blue-400 mb-3">Zmiana sterowania</h4>
+							<div class="space-y-2">
+								<div class="flex items-center justify-between">
+									<span class="text-xs text-gray-300">Ruch w lewo</span>
+									<input type="text" id="key-left" class="w-20 bg-gray-800 border border-gray-700 rounded px-2 py-1 text-white text-xs" readonly>
+								</div>
+								<div class="flex items-center justify-between">
+									<span class="text-xs text-gray-300">Ruch w prawo</span>
+									<input type="text" id="key-right" class="w-20 bg-gray-800 border border-gray-700 rounded px-2 py-1 text-white text-xs" readonly>
+								</div>
+								<div class="flex items-center justify-between">
+									<span class="text-xs text-gray-300">Obrót</span>
+									<input type="text" id="key-rotate" class="w-20 bg-gray-800 border border-gray-700 rounded px-2 py-1 text-white text-xs" readonly>
+								</div>
+								<div class="flex items-center justify-between">
+									<span class="text-xs text-gray-300">Szybciej</span>
+									<input type="text" id="key-drop" class="w-20 bg-gray-800 border border-gray-700 rounded px-2 py-1 text-white text-xs" readonly>
+								</div>
+								<div class="flex items-center justify-between">
+									<span class="text-xs text-gray-300">Upuść</span>
+									<input type="text" id="key-harddrop" class="w-20 bg-gray-800 border border-gray-700 rounded px-2 py-1 text-white text-xs" readonly>
+								</div>
+								<div class="flex items-center justify-between">
+									<span class="text-xs text-gray-300">Pauza</span>
+									<input type="text" id="key-pause" class="w-20 bg-gray-800 border border-gray-700 rounded px-2 py-1 text-white text-xs" readonly>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
-			<div class="game-board">
-				<canvas id="KPK" width="312" height="520"></canvas>
+
+			<!-- Game Board -->
+			<div class="bg-gray-900/50 rounded-xl p-6 border border-gray-800 relative">
+				<div id="expert-notification" class="absolute top-2 left-1/2 transform -translate-x-1/2 bg-red-900/90 text-red-400 px-4 py-2 rounded-lg text-sm font-bold hidden">
+					EXPERT MODE AKTYWNY
+				</div>
+				<canvas id="KPK" width="312" height="520" class="rounded-lg"></canvas>
 			</div>
 		</div>
-		<div class="button-container">
-			<button id="start-btn">Start</button>
-			<button id="reset-btn">Reset</button>
+
+		<!-- Footer -->
+		<div class="text-center mt-8 text-gray-400 text-sm">
+			<p>© 2026 Sebastian Polska. Wszelkie prawa zastrzeżone.</p>
 		</div>
-		<p class="copyright">© 2026 Sebastian Polska. Wszelkie prawa zastrzeżone.</p>
-		<!-- KPK GAME - Copyright (c) 2026 Sebastian Polska. Wszelkie prawa zastrzeżone. Zabrania się kopiowania i modyfikowania kodu. -->
 	</div>
+	<!-- KPK GAME - Copyright (c) 2026 Sebastian Polska. Wszelkie prawa zastrzeżone. Zabrania się kopiowania i modyfikowania kodu. -->
 	<script src="script.js"></script>
 </body>
 </html>
