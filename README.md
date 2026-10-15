@@ -1,6 +1,6 @@
 # Klocek Pod Klockiem (KPK)
 
-Klasyczna gra w stylu Tetris napisana w języku [wpisz język, np. Python / JavaScript].
+Klasyczna gra w stylu Tetris napisana w języku html.
 
 ## 🎮 Sterowanie
 
